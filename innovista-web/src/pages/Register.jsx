@@ -100,6 +100,12 @@ export default function Register() {
                         headers: { Authorization: `Bearer ${token}` }
                     });
 
+                    // Save local copy for Dashboard to use immediately
+                    localStorage.setItem('innovista_user_profile', JSON.stringify({
+                        ...formData,
+                        role: role.charAt(0).toUpperCase() + role.slice(1)
+                    }));
+
                     toast.success("Profile created successfully!");
                     navigate('/match-results', {
                         state: {
@@ -112,6 +118,13 @@ export default function Register() {
                 if (!error.response || error.code === 'ERR_NETWORK') {
                     toast.success("Offline Mode: Proceeding to Matches");
                     localStorage.setItem('innovista_token', 'mock_offline_token');
+                    
+                    // Save local copy for offline dashboard
+                    localStorage.setItem('innovista_user_profile', JSON.stringify({
+                        ...formData,
+                        role: role.charAt(0).toUpperCase() + role.slice(1)
+                    }));
+                    
                     navigate('/match-results', {
                         state: {
                             query: formData.bio || formData.tags || "Seeking ecosystem connection."

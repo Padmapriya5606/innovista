@@ -210,7 +210,7 @@ export default function MatchResults() {
                 </button>
                 <button
                     className="group inline-flex items-center justify-center w-full md:w-auto gap-3 px-8 py-4 rounded-xl bg-[#111827] border border-[#334155] hover:border-[#3B82F6] text-[#CBD5E1] hover:text-white font-semibold transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.2)]"
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => navigate('/ecosystem')}
                 >
                     Explore full ecosystem map
                     <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform text-[#3B82F6]" />

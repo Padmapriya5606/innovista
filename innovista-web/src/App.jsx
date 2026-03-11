@@ -8,6 +8,7 @@ import RoleSelection from './pages/RoleSelection';
 import Register from './pages/Register';
 import MatchResults from './pages/MatchResults';
 import Dashboard from './pages/Dashboard';
+import EcosystemGraph from './pages/EcosystemGraph';
 
 function App() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function App() {
             <Route path="/register/:role" element={<Register />} />
             <Route path="/match-results" element={<MatchResults />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/ecosystem" element={<EcosystemGraph />} />
           </Routes>
         </AnimatePresence>
       </div>

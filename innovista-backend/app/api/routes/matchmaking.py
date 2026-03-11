@@ -100,9 +100,21 @@ def search_ecosystem(
             )
         ]
             
+    # Deduplicate matches based on user_id
+    unique_matches = []
+    seen_users = set()
+    for m in matches:
+        if m.user_id not in seen_users:
+            unique_matches.append(m)
+            seen_users.add(m.user_id)
+            
     # Sort by highest score
-    matches.sort(key=lambda x: x.score, reverse=True)
-    return MatchResponse(matches=matches)
+    unique_matches.sort(key=lambda x: x.score, reverse=True)
+    
+    # Cap to exactly 5 profiles for the UI
+    final_matches = unique_matches[:5]
+    
+    return MatchResponse(matches=final_matches)
 
 @router.post("/connect")
 def request_connection(

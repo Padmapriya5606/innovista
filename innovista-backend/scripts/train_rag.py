@@ -53,17 +53,18 @@ def process_dataframe(df, role, db, documents, embeddings, metadatas, ids, hashe
         elif role == "Startup":
             full_name = str(row.get('startup_name', ''))
             company_name = full_name
-            email = f"{full_name.lower().replace(' ', '.')}@startup.com"
+            original_email = str(row.get('email', ''))
+            email = original_email if pd.notna(original_email) and original_email else f"{full_name.lower().replace(' ', '.')}@startup.com"
             domain = str(row.get('domain', ''))
             stage = str(row.get('stage', ''))
-            bio = str(row.get('description', '')) + " " + str(row.get('one_line_pitch', ''))
+            bio = str(row.get('description', ''))
             tags = domain
         elif role == "Alumni":
             full_name = str(row.get('name', ''))
             email = str(row.get('email', f"{full_name.lower().replace(' ', '.')}@alumni.edu"))
             domain = str(row.get('domain', ''))
-            company_name = str(row.get('current_company', ''))
-            bio = str(row.get('career_path_summary', ''))
+            company_name = str(row.get('organization', ''))
+            bio = str(row.get('career_journey', ''))
             tags = domain
         
         if not email or not full_name:
@@ -137,11 +138,11 @@ def train_rag():
     total_profiles = 0
     
     files_to_process = [
-        ("1_mentors_hybrid500.xlsx", "Mentor"),
-        ("2_investors_hybrid500.xlsx", "Investor"),
-        ("3_startups_hybrid500.xlsx", "Startup"),
-        ("4_alumni_hybrid500.xlsx", "Alumni"),
-        ("5_students_hybrid500.xlsx", "Student")
+        ("2_mentors_500.xlsx", "Mentor"),
+        ("3_investors_500.xlsx", "Investor"),
+        ("4_startups_500.xlsx", "Startup"),
+        ("5_alumni_500.xlsx", "Alumni"),
+        ("1_students_500.xlsx", "Student")
     ]
     
     for filename, role in files_to_process:

@@ -1,6 +1,27 @@
+# Dataset files
 dataset/
+
+# Frontend
 node_modules/
 .expo/
 dist/
 build/
+
+# Environment
 .env
+*.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+
+# ChromaDB
+innovista-backend/chroma_db/
+
+# Logs
+*.log
+uvicorn_log.txt

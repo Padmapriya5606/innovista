@@ -54,16 +54,23 @@ export default function Dashboard() {
                     api.get('/analytics/milestones')
                 ]);
 
+                // Check if we have local registration data to hydrate missing fields
+                const localDataRaw = localStorage.getItem('innovista_user_profile');
+                let localData = null;
+                try {
+                    if (localDataRaw) localData = JSON.parse(localDataRaw);
+                } catch(e) {}
+
                 // Map User Data
                 const user = meRes.data;
                 setUserProfile({
-                    name: user.profile?.full_name || user.email.split('@')[0],
-                    role: user.role,
-                    email: user.email,
-                    phone: user.profile?.phone || "N/A",
-                    startup: user.profile?.company_name || "N/A",
-                    domain: user.profile?.domain || "N/A",
-                    stage: user.profile?.stage || "N/A",
+                    name: localData?.first_name ? `${localData.first_name} ${localData.last_name || ''}`.trim() : (user.profile?.full_name || user.email.split('@')[0]),
+                    role: localData?.role || user.role,
+                    email: localData?.email || user.email,
+                    phone: localData?.phone || user.profile?.phone || "N/A",
+                    startup: localData?.company_name || user.profile?.company_name || "N/A",
+                    domain: localData?.domain || user.profile?.domain || "N/A",
+                    stage: localData?.stage || user.profile?.stage || "N/A",
                     joined: "Recent"
                 });
 
