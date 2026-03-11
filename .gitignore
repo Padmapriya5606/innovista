@@ -1,0 +1,6 @@
+dataset/
+node_modules/
+.expo/
+dist/
+build/
+.env

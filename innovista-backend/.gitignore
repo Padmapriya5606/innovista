@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.env
+chroma_db/
+innovista.db
+*_log*.txt
+err.txt
+output.txt
+test_results.txt
+.pytest_cache/

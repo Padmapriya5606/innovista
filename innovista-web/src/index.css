@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-page: #0A0F1E;
+  --color-surface-dark: #111827;
+  --color-surface-hover: #1A2236;
+  --color-input: #0D1425;
+  --color-sidebar: #0D1425;
+
+  --color-accent-600: #6366F1;
+  --color-accent-500: #8B5CF6;
+
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  --font-inter: 'Inter', sans-serif;
+  --font-outfit: 'Outfit', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-page text-white font-outfit antialiased selection:bg-accent-600/30;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-accent-600 to-accent-500;
+  }
+
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-accent-600 to-accent-500;
+  }
+
+  .glow-border {
+    border: 1px solid rgba(99, 102, 241, 0.15);
+  }
+
+  .glow-hover {
+    @apply transition-all duration-300;
+  }
+
+  .glow-hover:hover {
+    box-shadow: 0 0 24px rgba(99, 102, 241, 0.15);
+  }
+
+  .glow-hover-strong {
+    @apply transition-all duration-300;
+  }
+
+  .glow-hover-strong:hover {
+    box-shadow: 0 0 32px rgba(99, 102, 241, 0.3);
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+
+    100% {
+      transform: translateY(0px);
+    }
+  }
+}
