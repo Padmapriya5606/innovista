@@ -37,11 +37,30 @@ def _disable_openai(reason: str):
         print(f"OpenAI circuit breaker triggered: {reason}. Switching to local fallback for all future requests.")
         _openai_disabled = True
 
+import hashlib
+import math
+
+def _text_to_deterministic_embedding(text: str, dim: int = 1536) -> list[float]:
+    """Converts text into a deterministic fixed-dimension vector using character n-gram hashing.
+    Same words -> similar vectors. This replaces the random fallback so ChromaDB searches
+    are semantically meaningful without any API dependency."""
+    words = text.lower().split()
+    vec = [0.0] * dim
+    for word in words:
+        h = int(hashlib.md5(word.encode()).hexdigest(), 16)
+        # Distribute contribution across multiple dimensions
+        for k in range(8):
+            idx = (h + k * 31337) % dim
+            vec[idx] += 1.0 / (k + 1)
+    # Normalize to unit vector
+    magnitude = math.sqrt(sum(v * v for v in vec)) or 1.0
+    return [v / magnitude for v in vec]
+
 def generate_embedding(text: str) -> list[float]:
-    """Generates an embedding vector for the given text."""
-    import random
+    """Generates an embedding vector for the given text.
+    Tries OpenAI first; falls back to deterministic keyword hash if unavailable."""
     if not _is_openai_available():
-        return [random.random() for _ in range(1536)]
+        return _text_to_deterministic_embedding(text)
     
     try:
         response = client.embeddings.create(
@@ -51,7 +70,7 @@ def generate_embedding(text: str) -> list[float]:
         return response.data[0].embedding
     except Exception as e:
         _disable_openai(str(e)[:80])
-        return [random.random() for _ in range(1536)]
+        return _text_to_deterministic_embedding(text)
 
 def index_profile(profile_id: int, text_content: str, metadata: dict):
     """Indexes a user profile into ChromaDB for semantic search."""

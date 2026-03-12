@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BrainCircuit, Briefcase, Users, ArrowRight, MessageCircle } from 'lucide-react';
+import { BrainCircuit, Briefcase, Users, ArrowRight, MessageCircle, Search, X } from 'lucide-react';
 import { PageTransition, StaggerContainer, StaggerItem } from '../components/layout/PageTransition';
 import { MatchScoreRing } from '../components/ui/MatchScoreRing';
 import { Button } from '../components/ui/Button';
@@ -10,6 +10,7 @@ import { ProfileModal } from '../components/ui/ProfileModal';
 import { IdeaEvaluationModal } from '../components/ui/IdeaEvaluationModal';
 import toast, { Toaster } from 'react-hot-toast';
 import api from '../services/api';
+import { AIAgent } from '../components/ui/AIAgent';
 
 export default function MatchResults() {
     const navigate = useNavigate();
@@ -20,17 +21,34 @@ export default function MatchResults() {
 
     const [loading, setLoading] = useState(true);
     const [matches, setMatches] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [chatTarget, setChatTarget] = useState(null);
     const [profileTarget, setProfileTarget] = useState(null);
     const [isIdeaEvalOpen, setIsIdeaEvalOpen] = useState(false);
 
+    // Filter matches based on search query (name or domain/role)
+    const filteredMatches = searchQuery.trim()
+        ? matches.filter(m =>
+            m.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            m.role?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (Array.isArray(m.tags) ? m.tags.join(' ') : (m.tags || '')).toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : matches;
+
     useEffect(() => {
         const fetchMatches = async () => {
             try {
-                const response = await api.post('/matchmaking/search', {
-                    query: query,
-                    limit: 5
-                });
+                // Read the registered user's role from localStorage
+                const localProfile = localStorage.getItem('innovista_user_profile');
+                let userRole = 'Student';
+                if (localProfile) {
+                    try { userRole = JSON.parse(localProfile).role || 'Student'; } catch(e) {}
+                }
+
+                const response = await api.post('/matchmaking/search', 
+                    { query: query, limit: 5 },
+                    { headers: { 'X-User-Role': userRole } }
+                );
 
                 // Store all matches sequentially
                 const allMatches = response.data.matches;
@@ -133,7 +151,7 @@ export default function MatchResults() {
 
             {/* Top Matches */}
             <div className="mb-16 relative z-10 w-full max-w-6xl mx-auto">
-                <div className="flex flex-col items-center justify-center gap-3 mb-12 px-2 text-center">
+                <div className="flex flex-col items-center justify-center gap-3 mb-8 px-2 text-center">
                     <div className="p-3 bg-gradient-to-r from-[#3B82F6]/10 to-[#22D3EE]/10 rounded-xl border border-[#3B82F6]/20 inline-block">
                         <Users className="text-[#3B82F6]" size={28} />
                     </div>
@@ -141,9 +159,31 @@ export default function MatchResults() {
                     <p className="text-[#94A3B8]">AI-curated connections tailored specifically for your profile.</p>
                 </div>
 
+                {/* Search Bar */}
+                <div className="relative max-w-xl mx-auto mb-10">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                        <Search size={18} className="text-[#64748B]" />
+                    </div>
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        placeholder="Search by name, role, or domain..."
+                        className="w-full bg-[#111827] border border-[#1E293B] focus:border-[#3B82F6] text-white text-sm rounded-[12px] pl-11 pr-10 py-3.5 outline-none transition-colors placeholder:text-[#475569]"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="absolute inset-y-0 right-4 flex items-center text-[#64748B] hover:text-white transition-colors"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
+                </div>
+
                 <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {matches.length === 0 && <p className="text-[#94A3B8] col-span-full py-12 text-center text-lg">No matches found based on this query. Please verify your profile info.</p>}
-                    {matches.map((match) => {
+                    {filteredMatches.length === 0 && <p className="text-[#94A3B8] col-span-full py-12 text-center text-lg">{searchQuery ? `No results for "${searchQuery}". Try a different search.` : 'No matches found based on this query. Please verify your profile info.'}</p>}
+                    {filteredMatches.map((match) => {
                         const isInvestor = ['investor', 'startup'].includes(match.role?.toLowerCase());
                         const colorSet = isInvestor ?
                             { primary: "#22D3EE", gradient: "from-[#22D3EE] to-[#0891B2]", icon: Briefcase } :
@@ -239,6 +279,7 @@ export default function MatchResults() {
                 onClose={() => setIsIdeaEvalOpen(false)}
             />
 
+            <AIAgent />
             <Toaster position="top-right" />
         </PageTransition>
     );

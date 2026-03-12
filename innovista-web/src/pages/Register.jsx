@@ -33,7 +33,10 @@ export default function Register() {
         domain: '',
         stage: '',
         tags: '',
-        bio: ''
+        bio: '',
+        category: '', // Student category
+        cgpa: '',     // Student CGPA
+        leetcode_count: '' // Student LeetCode solved count
     });
 
     const meta = roleMeta[role] || roleMeta['student'];
@@ -178,10 +181,51 @@ export default function Register() {
                             <Input placeholder="University Name" />
                         </div>
                     </div>
+                    <div className="space-y-2">
+                        <label className="text-[11px] uppercase tracking-[0.08em] font-medium text-[#94A3B8] block mb-2">Category / Goal</label>
+                        <select
+                            name="category"
+                            value={formData.category}
+                            onChange={handleInputChange}
+                            className="w-full rounded-[10px] border border-[#6366F1]/20 bg-[#0D1425] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]"
+                        >
+                            <option value="">-- Select your goal --</option>
+                            <option value="Placement">Placement</option>
+                            <option value="Startup">Startup</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="Higher Study">Higher Study</option>
+                        </select>
+                    </div>
                 </>
             )}
             {step === 2 && (
                 <>
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-[11px] uppercase tracking-[0.08em] font-medium text-[#94A3B8]">CGPA</label>
+                            <Input
+                                type="number"
+                                name="cgpa"
+                                value={formData.cgpa}
+                                onChange={handleInputChange}
+                                placeholder="e.g. 8.5"
+                                step="0.1"
+                                min="0"
+                                max="10"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[11px] uppercase tracking-[0.08em] font-medium text-[#94A3B8]">LeetCode Problems Solved</label>
+                            <Input
+                                type="number"
+                                name="leetcode_count"
+                                value={formData.leetcode_count}
+                                onChange={handleInputChange}
+                                placeholder="e.g. 150"
+                                min="0"
+                            />
+                        </div>
+                    </div>
                     <div className="space-y-2">
                         <label className="text-[11px] uppercase tracking-[0.08em] font-medium text-[#94A3B8]">Skills / Tags</label>
                         <Input name="tags" value={formData.tags} onChange={handleInputChange} placeholder="React, Node.js, Hardware..." />
